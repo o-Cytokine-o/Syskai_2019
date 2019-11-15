@@ -8,7 +8,7 @@
     {% endblock %}
 
     <div class='a1'>
-      <h1><img src="https://user-images.githubusercontent.com/45552789/68008893-b78ffd00-fcc3-11e9-9487-c19eb95f59bf.png" class="panel"></h1>
+      <h1><img src="{% static 'img/game.png' %}" class="title"></h1>
     </div>
     <div class="b1">
       <p>アシスト表示</p>
@@ -19,19 +19,29 @@
       <h1 class="title">
         {{title}}
       </h1>
-      <div class="subtitle">
-        <p>カードの点数:</p>
-        <p class="text1">aaaaaaaaa</p>
-        <p>2~10:数字通りの点数</p>
-        <p>絵札:全て10点</p>
-        <p>A:1点or11点</p>
-      </div>
-      <div>
-        <p>カードを引く場合はヒット</p>
-        <p>それ以上引かない場合はスタンド</p>
-        <p>カードの合計値が21点を超えるとバーストになる</p>
-      </div>
     </div>
+
+  <div class="menu">
+      <label for="menu_bar01">基本ルール</label>
+      <input type="checkbox" id="menu_bar01" class="accordion" />
+      <ul id="links01">
+        <li>ディーラーが自分とプレイヤーにカードを配り、手札の合計数が21点に近い方が勝ちです</li>
+        <li>カードの合計値が21点を超えた場合バーストになり、敗北となります。</li>
+      </ul>
+    <label for="menu_bar02">カードの点数について</label>
+    <input type="checkbox" id="menu_bar02" class="accordion" />
+    <ul id="links02">
+        <li>2~10:数字通りの点数</li>
+        <li>絵札:全て10点</li>
+        <li>A:1点or11点</li>
+    </ul>
+    <label for="menu_bar03">宣言について</label>
+    <input type="checkbox" id="menu_bar03" class="accordion" />
+    <ul id="links03">
+        <li>カードを引く場合はヒット</li>
+        <li>それ以上引かない場合はスタンド</li>
+    </ul>
+</div>
   </body>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
   <script>
