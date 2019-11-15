@@ -181,7 +181,6 @@ def assist(p_list,d_list):
     else:
         assist_frag=hard_hand(p_list,d_list)
 
-
     return assist_frag
     
 
