@@ -1,0 +1,26 @@
+{% load static %}
+<html>
+  <head>
+  </head>
+  <body>
+    {% block extrahead %}
+      <link href="{% static 'main.css' %}" rel="stylesheet">
+    {% endblock %}
+
+    <div class='a1'>
+      <h1><img src="{% static 'img/waja.png' %}" class="title"></h1>
+    </div>
+	
+	<div class="b1">
+	  
+      <p><a href="{% url 'myapp:game'%}"><img src="{% static 'img/game.png' %}" class="panel"></a></p>
+  </div>
+  
+  <h1 class="title">
+    {{title}}
+  </h1>
+  <p class="subtitle">
+    {{subtitle}}
+  </p>
+  </body>
+</html>

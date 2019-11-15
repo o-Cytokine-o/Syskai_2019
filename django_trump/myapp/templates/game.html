@@ -1,0 +1,49 @@
+{% load static %}
+<html>
+  <head>
+  </head>
+  <body>
+    {% block extrahead %}
+      <link href="{% static 'game.css' %}" rel="stylesheet">
+    {% endblock %}
+
+    <div class='a1'>
+      <h1><img src="https://user-images.githubusercontent.com/45552789/68008893-b78ffd00-fcc3-11e9-9487-c19eb95f59bf.png" class="panel"></h1>
+    </div>
+    <div class="b1">
+      <p>アシスト表示</p>
+    </div>
+      
+    <div class="c1">
+      <p>チュートリアル表示</p>
+      <h1 class="title">
+        {{title}}
+      </h1>
+      <div class="subtitle">
+        <p>カードの点数:</p>
+        <p class="text1">aaaaaaaaa</p>
+        <p>2~10:数字通りの点数</p>
+        <p>絵札:全て10点</p>
+        <p>A:1点or11点</p>
+      </div>
+      <div>
+        <p>カードを引く場合はヒット</p>
+        <p>それ以上引かない場合はスタンド</p>
+        <p>カードの合計値が21点を超えるとバーストになる</p>
+      </div>
+    </div>
+  </body>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script>
+    $(function() {
+    
+        socket = new WebSocket("ws://localhost:9990/");
+        socket.onmessage = function(e) {
+            
+            $('.text1').html(e);
+    
+        }
+    });
+    
+  </script>
+</html>
