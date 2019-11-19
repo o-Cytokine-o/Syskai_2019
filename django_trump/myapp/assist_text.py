@@ -10,7 +10,7 @@ def get_assist(hand_arr):
 
     for player_hand in p_list:
         
-        assist_flag = 0
+        assist_flag = 0 
 
         assist_flag = lg.assist(player_hand,d_list)
 
