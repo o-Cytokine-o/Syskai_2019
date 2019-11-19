@@ -1,11 +1,74 @@
+body{
+    background-color: #433D3C;
+}
+
+.a1{
+    text-align: left;
+    margin-top: 5%;
+    margin-left: 10%;
+    padding-right: 50%;
+}
+
 .b1{
+    color:#fff;
     text-align: right;
     margin-right: 30%;
-    margin-top: -25%;
-    
+    margin-top: -15%;    
 }
 
 .c1{
-    text-align: center;
+    color:#fff;
+    text-align: left;
     margin-top: 20%;
+    margin-left: 20%;
+}
+
+.subtitle{
+    text-align: right;
+}
+
+/*固定チュートリアル*/
+.menu {
+    margin-left: 55%;
+    margin-top: -9%;
+    max-width: 400px;
+    padding: 0;
+}
+
+label {
+    display: block;
+    margin: 0 0 2px 0;
+    padding :12px;
+    line-height: 1;
+    color :#fff;
+    background :#007bbb;
+    cursor :pointer;
+}
+
+input {
+    display: none;
+}
+
+.menu ul {
+    margin: 0;
+    padding: 0;
+    background :#f4f4f4;
+    list-style: square;
+}
+
+.menu li {
+    max-height: 0;
+    overflow-y: hidden;
+    -webkit-transition: all 0.5s;
+    -moz-transition: all 0.5s;
+    -ms-transition: all 0.5s;
+    -o-transition: all 0.5s;
+    transition: all 0.5s;
+}
+
+#menu_bar01:checked ~ #links01 li,
+#menu_bar02:checked ~ #links02 li,
+#menu_bar03:checked ~ #links03 li {
+    max-height: 46px;
+    opacity: 1;
 }
