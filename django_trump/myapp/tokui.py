@@ -72,6 +72,6 @@ def get_state(field_list,turn):
             cnt+=1
 
     if field_state.count(2)==4:
-       field_state[cnt]=3
+       field_state[0]=3
     
     return field_state
