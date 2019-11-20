@@ -39,8 +39,16 @@ def sakaguti():
     return text
 
 def get_state(field_list,turn):
+    #field_state[ディーラー、プレイヤー１、プレイヤー２、プレイヤー３、プレイヤー４]
+    #0:カードがまだ2枚配られていない
+    #1:カードが2枚ある
+    #2:そのプレイヤーのターン終了した
+    #3:全プレイヤーのターンが終了した
+    
+    
+    
     global field_state #関数内グローバル変数宣言
-    global turn_end #エラー吐くお
+    global turn_end 
     cnt=0 #カウンタ初期化
     
     #カード配っていない
@@ -53,8 +61,8 @@ def get_state(field_list,turn):
     cnt=0
     for i in field_list:
         if cnt==0:
-            if (len(i)==1)and(field_state[cnt]==0):
-                field_state[cnt]=1
+            if (len(i)==1)and(field_state[cnt]==0)and(field_list[0][0]!=0):
+                field_state[cnt]=2
         else:    
             if (len(i)==2)and(field_state[cnt]!=2):
                 field_state[cnt]=1
@@ -65,13 +73,14 @@ def get_state(field_list,turn):
     if turn==True:
         for i in field_state:
             if cnt>0:
-                if i==1:
+                pre_player=field_state[cnt-1]
+                if (i==1)and(pre_player==2):
                     field_state[cnt]=2
                     turn_end=False
                     break
             cnt+=1
 
-    if field_state.count(2)==4:
+    if field_state.count(2)==5:
        field_state[0]=3
     
     return field_state
