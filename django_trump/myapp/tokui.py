@@ -38,3 +38,40 @@ def sakaguti():
 
     return text
 
+def get_state(field_list,turn):
+    global field_state #関数内グローバル変数宣言
+    global turn_end #エラー吐くお
+    cnt=0 #カウンタ初期化
+    
+    #カード配っていない
+    for i in field_list:
+        if (0 in i)or(len(i)==1):
+            field_state[cnt]=0
+        cnt+=1
+    
+    #全員配り終わった
+    cnt=0
+    for i in field_list:
+        if cnt==0:
+            if (len(i)==1)and(field_state[cnt]==0):
+                field_state[cnt]=1
+        else:    
+            if (len(i)==2)and(field_state[cnt]!=2):
+                field_state[cnt]=1
+        cnt+=1
+    
+    #ターンエンド判定
+    cnt=0
+    if turn==True:
+        for i in field_state:
+            if cnt>0:
+                if i==1:
+                    field_state[cnt]=2
+                    turn_end=False
+                    break
+            cnt+=1
+
+    if field_state.count(2)==4:
+       field_state[cnt]=3
+    
+    return field_state
