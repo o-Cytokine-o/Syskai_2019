@@ -8,14 +8,14 @@
     {% endblock %}
 
     <div class='a1'>
-      <h1><img src="{% static 'img/game.png' %}" class="title"></h1>
+      <h1><img src="{% static 'img/test.png' %}" class="game"></h1>
     </div>
     <div class="b1">
       <p>アシスト表示</p>
     </div>
       
     <div class="c1">
-      <p>チュートリアル表示</p>
+      <p class="text1">チュートリアル表示</p>
       <h1 class="title">
         {{title}}
       </h1>
@@ -26,7 +26,7 @@
       <input type="checkbox" id="menu_bar01" class="accordion" />
       <ul id="links01">
         <li>ディーラーが自分とプレイヤーにカードを配り、手札の合計数が21点に近い方が勝ちです</li>
-        <li>カードの合計値が21点を超えた場合バーストになり、敗北となります。</li>
+        <li>カードの合計値が21点を超えた場合バーストになり、負けとなります。</li>
       </ul>
     <label for="menu_bar02">カードの点数について</label>
     <input type="checkbox" id="menu_bar02" class="accordion" />
@@ -50,7 +50,7 @@
         socket = new WebSocket("ws://localhost:9990/");
         socket.onmessage = function(e) {
             
-            $('.text1').html(e);
+            $('.text1').html(e.data);
     
         }
     });
