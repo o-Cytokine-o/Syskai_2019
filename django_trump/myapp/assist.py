@@ -1,4 +1,4 @@
-import logic as lg
+from myapp import logic as lg
 import numpy as np
 
 def get_assist(hand_arr):

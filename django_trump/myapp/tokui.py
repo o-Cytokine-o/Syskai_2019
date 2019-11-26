@@ -1,9 +1,9 @@
 # sakaguti関数とは、
 
-def sakaguti(state_frag):
+def sakaguti(field_state):
 
     text=[]
-    d="ディーラーが全プレイヤーにカード配布するまでお待ちください。"
+    d="ディーラーが全プレイヤーにカード配布するまでお待ちください。aqwerty"
     p="それでは深い闇のゲームを開始します。"
     p1="プレイヤー1はアシスト画面に従い自身の行動を選択し宣言してください。"
     p2="プレイヤー1は自身の行動を終える場合、ターンエンドを宣言してください。"
@@ -15,31 +15,31 @@ def sakaguti(state_frag):
     p8="プレイヤー4は自身の行動を終える場合、ターンエンドを宣言してください。"
     p9="ディーラーのカードの合計が、17以上になるまでカードを引き、その合計値で勝敗が決まります。"
 
-    if state_frag==0:
+    if field_state[0]==0:
         text.append(d)
-    elif state_frag==1:
+    elif field_state[1]==1:
         text.append(p)
         text.append(p1)
         text.append(p2)    
-    elif state_frag==2:
+    elif field_state[2]==1:
         text.append(p3)
         text.append(p4)
-    elif state_frag==3:
+    elif field_state[3]==1:
         text.append(p5)
         text.append(p6)
-    elif state_frag==4:
+    elif field_state[4]==1:
         text.append(p7)
         text.append(p8)
-    elif state_frag==5:
+    elif field_state[0]==3:
         text.append(p9)
-    elif state_frag==6:
+    elif field_state[-1]==3:
         text.append()
     else:
         text.append("unko")
 
     return text
 
-def get_state(field_list,turn):
+def get_state(field_list,turn,field_state):
     #field_state[ディーラー、プレイヤー１、プレイヤー２、プレイヤー３、プレイヤー４]
     #0:カードがまだ2枚配られていない
     #1:カードが2枚ある
@@ -48,8 +48,8 @@ def get_state(field_list,turn):
     
     
     
-    global field_state #関数内グローバル変数宣言
-    global turn_end 
+    """ global field_state #関数内グローバル変数宣言
+    global turn_end  """
     cnt=0 #カウンタ初期化
     
     #カード配っていない
@@ -83,5 +83,8 @@ def get_state(field_list,turn):
 
     if field_state.count(2)==5:
        field_state[0]=3
+
+    if field_state[0]==3 and field_list[0]>=17:
+        field_state = [3 for i in range(5)]
     
     return field_state
