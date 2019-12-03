@@ -78,6 +78,9 @@ def gen(camera):
 
     #データ送信用クライアントの処理
     ws = create_connection("ws://localhost:9990/")
+
+    #ゲームのステータスを初期化
+    field_state = [0,0,0,0,0]
     
     while(True):
 
@@ -106,11 +109,10 @@ def gen(camera):
         #frameからプレイヤーの座標を取得
         #そこにスコア（合計値）を表示する
 
-        #ゲームのステータスを初期化
-        field_state = [0,0,0,0,0]
+        
 
         #ターンエンドフラグの初期化
-        turn_end = False
+        turn_end = True
 
         #各プレイヤーの数値を初期化
         num_dea = []
@@ -126,6 +128,11 @@ def gen(camera):
         total_num_p3 = 0
         total_num_p4 = 0
 
+        total_num_p1s = 0
+        total_num_p2s = 0
+        total_num_p3s = 0
+        total_num_p4s = 0
+
         #認識したカードの数字を合計する
         for item in box.items():
             text = item[1][0].split(':')
@@ -140,21 +147,33 @@ def gen(camera):
                     player_n =  'プレイヤー１'
                     num_p1.append(trump_text_to_num(text[0]))
                     total_num_p1 = total_num_p1 + (trump_text_to_num(text[0]))
+                    #手札にAが入っていた場合の考慮
+                    if 1 in num_p1:
+                        total_num_p1s = (total_num_p1 - 1) + 10
                     print('プレイヤー１'+str(total_num_p1))
                 elif xmax<0.5:
                     player_n =  'プレイヤー2'
                     num_p2.append(trump_text_to_num(text[0]))
                     total_num_p2 = total_num_p2 + (trump_text_to_num(text[0]))
+                    #手札にAが入っていた場合の考慮
+                    if 1 in num_p2:
+                        total_num_p2s = (total_num_p2 - 1) + 10
                     print('プレイヤー2')
                 elif xmax<0.75:
                     player_n =  'プレイヤー3'
                     num_p3.append(trump_text_to_num(text[0]))
                     total_num_p3 = total_num_p3 + (trump_text_to_num(text[0]))
+                    #手札にAが入っていた場合の考慮
+                    if 1 in num_p3:
+                        total_num_p3s = (total_num_p3 - 1) + 10
                     print('プレイヤー3')
                 else:
                     player_n =  'プレイヤー4'
                     num_p4.append(trump_text_to_num(text[0]))
                     total_num_p4 = total_num_p4 + (trump_text_to_num(text[0]))
+                    #手札にAが入っていた場合の考慮
+                    if 1 in num_p4:
+                        total_num_p4s = (total_num_p4 - 1) + 10
                     print('プレイヤー4')
 
             else:
@@ -189,13 +208,17 @@ def gen(camera):
         cv2.putText(frame, str(total_num_p3), (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
         cv2.putText(frame, str(total_num_p4), (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
 
+        cv2.putText(frame, str(total_num_p1s), (int(width*0.125), int(height*0.8)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 255), 3)
+        cv2.putText(frame, str(total_num_p2s), (int(width*0.375), int(height*0.8)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 255), 3)
+        cv2.putText(frame, str(total_num_p3s), (int(width*0.625), int(height*0.8)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 255), 3)
+        cv2.putText(frame, str(total_num_p4s), (int(width*0.875), int(height*0.8)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 255), 3)
+
         #ゲームの状態のフラグを取得
         field_state = tokui.get_state(field_list,turn_end,field_state)
         print('デバッグ：field_state'+str(field_state))
 
         #取得したフラグからチュートリアルのテキストを取得
         tutorial_text = tokui.sakaguti(field_state)
-        print('デバッグ：tutorial_text'+str(tutorial_text))
 
         #全プレイヤーの手札をもとに戦術の結果を取得する
         #カードが配布された後、アシストを表示する

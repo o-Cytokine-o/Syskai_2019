@@ -24,8 +24,8 @@ def game(request):
 class VideoCamera(object):
     def __init__(self):
         self.video = cv2.VideoCapture(0)
-        ret = self.video.set(3,1280)
-        ret = self.video.set(4,720)
+        ret = self.video.set(3,900)
+        ret = self.video.set(4,677)
         
     def __del__(self):
         self.video.release()

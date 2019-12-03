@@ -17,7 +17,7 @@ def sakaguti(field_state):
     p8=urllib.parse.quote("プレイヤー4は自身の行動を終える場合、ターンエンドを宣言してください。")
     p9=urllib.parse.quote("ディーラーのカードの合計が、17以上になるまでカードを引き、その合計値で勝敗が決まります。")
 
-    if field_state[0]==0:
+    if 0 in field_state:
         text.append(d)
     elif field_state[1]==1:
         text.append(p)
@@ -86,7 +86,7 @@ def get_state(field_list,turn,field_state):
     if field_state.count(2)==5:
        field_state[0]=3
 
-    if field_state[0]==3 and field_list[0]>=17:
+    if field_state[0]==3 and sum(field_list[0])>=17:
         field_state = [3 for i in range(5)]
     
     return field_state
