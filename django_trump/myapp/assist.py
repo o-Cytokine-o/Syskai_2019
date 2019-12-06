@@ -16,16 +16,16 @@ def get_assist(hand_arr):
         assist_flag = lg.assist(player_hand,d_list)
 
         if assist_flag == 0:
-            assist_text.append(urllib.parse.quote("プレイヤー"+i+"：スタンド"))
+            assist_text.append(urllib.parse.quote("プレイヤー"+str(i)+"：\tスタンド"))
         
         elif assist_flag == 1:
-            assist_text.append(urllib.parse.quote("プレイヤー"+i+"ヒット"))
+            assist_text.append(urllib.parse.quote("プレイヤー"+str(i)+"：\tヒット"))
 
         elif assist_flag == 2:
-            assist_text.append(urllib.parse.quote("プレイヤー"+i+"サレンダー"))
+            assist_text.append(urllib.parse.quote("プレイヤー"+str(i)+"：\tサレンダー"))
         
         else:
-            assist_text.append(urllib.parse.quote("プレイヤー"+i+"バースト"))
+            assist_text.append(urllib.parse.quote("プレイヤー"+str(i)+"：\tバースト"))
 
         i = i + 1
 

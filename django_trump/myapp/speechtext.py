@@ -12,23 +12,26 @@ mic = sr.Microphone()
 
 def SpeechToText():
    while True:
-    print("Say something ...")
+        print("Say something ...")
 
-    with mic as source:
-        r.adjust_for_ambient_noise(source)
-        audio = r.listen(source)
+        with mic as source:
+            r.adjust_for_ambient_noise(source)
+            audio = r.listen(source)
 
-    print ("Now to recognize it...")
+        print ("Now to recognize it...")
 
-    try:
-        print(r.recognize_google(audio, language='ja-JP'))
-        
-        if r.recognize_google(audio, language='ja-JP') in "ターンエンド" :
-            print("end")
-            break
-    except sr.UnknownValueError:
-        print("could not understand audio")
-    except sr.RequestError as e:
-        print("Could not request results from Google Speech Recognition service; {0}".format(e))
-        
-SpeechToText()
+        try:
+            print(r.recognize_google(audio, language='ja-JP'))
+            
+            if r.recognize_google(audio, language='ja-JP') in "ターンエンド" :
+                yield True
+                break
+
+        except sr.UnknownValueError:
+            print("could not understand audio")
+            yield True
+        except sr.RequestError as e:
+            print("Could not request results from Google Speech Recognition service; {0}".format(e))
+            yield True
+
+        yield True

@@ -90,7 +90,7 @@
             assist_text = text_arr[1].split(',')
             var i = 1
             assist_text.forEach(function(value){
-              $('.assist'+(i+1)).html(decodeURIComponent(value));
+              $('.assist'+i).html(decodeURIComponent(value));
               i++;
             });
     

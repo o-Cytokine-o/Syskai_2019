@@ -177,7 +177,7 @@ def assist(p_list,d_list):
     elif 1 in p_list: #1がある
         assist_frag=soft_hand(p_list,d_list)
     elif p_sum>16: #17以上
-        assist_frag=1
+        assist_frag=0
     else:
         assist_frag=hard_hand(p_list,d_list)
 

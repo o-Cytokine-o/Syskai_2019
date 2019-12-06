@@ -5,6 +5,8 @@ import cv2
 from myapp import tokui
 from myapp import assist
 from myapp import client as cli
+from myapp import speechtext as sptxt
+import threading
 from myapp.object_detection.models4.research.object_detection.utils import label_map_util
 from myapp.object_detection.models4.research.object_detection.utils import visualization_utils as vis_util
 from websocket import create_connection
@@ -81,6 +83,9 @@ def gen(camera):
 
     #ゲームのステータスを初期化
     field_state = [0,0,0,0,0]
+
+    #ターンエンドフラグの初期化
+    turn_end = False
     
     while(True):
 
@@ -109,10 +114,6 @@ def gen(camera):
         #frameからプレイヤーの座標を取得
         #そこにスコア（合計値）を表示する
 
-        
-
-        #ターンエンドフラグの初期化
-        turn_end = True
 
         #各プレイヤーの数値を初期化
         num_dea = []
@@ -220,9 +221,18 @@ def gen(camera):
         #取得したフラグからチュートリアルのテキストを取得
         tutorial_text = tokui.sakaguti(field_state)
 
+        turn_end_thread = threading.Thread(target=sptxt.SpeechToText)
+        #ターンエンド宣言のフラグ取得
+        if turn_end == True:
+            debug_str = ""
+            
+            #turn_end,debug_str = sptxt.SpeechToText()
+            turn_end = turn_end_thread.start()
+            print("マイクデバッグ："+str(debug_str))
+
         #全プレイヤーの手札をもとに戦術の結果を取得する
         #カードが配布された後、アシストを表示する
-        if field_state[0]==2:
+        if field_state[0]>=2:
             assist_text = assist.get_assist(field_list)
         else:
             assist_text = ''
