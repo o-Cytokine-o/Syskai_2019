@@ -29,15 +29,36 @@ body{
 
 .assist{
     color:#fff;
-    text-align: center;
+    text-align: left;
     width: 300px;
-    border: double #ADA250;    
+    border: solid 0.7px #565252;
+    padding: 0;
+    margin-bottom: 10%;
 }
+
+.assist p{
+    margin-top: 5%;
+    margin-left: 5%;
+    font-size: 120%;
+}
+
+.side{
+    border: solid 2px #585858;
+    background-color: #585858;
+    padding: 2%;
+}
+    
 
 .c1{
     color:#fff;
-    text-align: center;
-    border: double #ADA250;
+    /*border: double #ADA250;*/
+}
+
+.info1{
+    font-size: 150%;
+    padding-top: 1.5%;
+    padding-bottom: 1.5%;
+    border-bottom: solid 2px #585858;
 }
 
 /*
@@ -53,15 +74,18 @@ body{
     margin: 1%;
     max-width: 400px;
     padding: 0;
+    margin-right: 5%;
+    margin-top: -10%;
 }
 
 label {
     display: block;
     padding: 12px 12px 8px 12px;
     line-height: 1;
-    color:#c0c0c0;
-    border-bottom: solid 2px #737373;
-    margin-bottom: 0;
+    color:#fff;
+    /*border-bottom: solid 2px #585858;*/
+    font-size: 120%;
+    margin: -4px -3px 0px 0px;
 }
 
 input {
@@ -77,7 +101,7 @@ input {
 }
 
 .menu ul {
-    margin: 0;
+    margin-bottom: 2%;
     padding: 0 0 0 20px;
     color:#c0c0c0;
     list-style: square;
