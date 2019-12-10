@@ -26,6 +26,10 @@ pip install lxml
 pip install opencv-python
 pip install matplotlib
 pip install pillow
+pip install websocket
+pip install websocket-client
+pip install SpeechRecognition
+pip install pyaudio
 ```
 
 ## 2.任意の場所で以下のコマンドを実行する
@@ -42,8 +46,12 @@ git clone https://github.com/o-Cytokine-o/Syskai_2019.git
 ```
 cd Syskai_2019/django_trump
 ```
-
-### 4-2.Djangoのサーバーを起動
+### 4-2.ファイルを実行するためのパスを通す
+以下のコマンドを実行する。[]は外してください。
+```
+set PYTHONPATH=[git cloneしたところまでの絶対パスを入れてください]\Syskai_2019\django_trump\myapp\object_detection\models4;[ここも同様に]\Syskai_2019\django_trump\myapp\object_detection\models4\research;[ここも同様]\Syskai_2019\django_trump\myapp\object_detection\models4\research\slim
+```
+### 4-3.Djangoのサーバーを起動
 ```
 python manage.py runserver
 ```
