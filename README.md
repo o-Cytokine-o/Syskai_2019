@@ -26,7 +26,9 @@ pip install lxml
 pip install opencv-python
 pip install matplotlib
 pip install pillow
+pip install django
 pip install websocket
+pip install websocket-server
 pip install websocket-client
 pip install SpeechRecognition
 pip install pyaudio
