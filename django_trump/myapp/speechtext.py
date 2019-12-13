@@ -23,7 +23,8 @@ def SpeechToText():
         try:
             print(r.recognize_google(audio, language='ja-JP'))
             
-            if r.recognize_google(audio, language='ja-JP') in "ターンエンド" :
+            if r.recognize_google(audio, language='ja-JP') in "ターンエンド":
+                print("wwwwwwwwwwwwwwwwwwwOK!wwwwwwwwwwwwwwwwwwwwwwww")
                 return True
                 break
 

@@ -8,16 +8,25 @@ from myapp import client as cli
 from myapp import speechtext as sptxt
 import threading
 from multiprocessing import Process
+from multiprocessing import Value
 from myapp.object_detection.models4.research.object_detection.utils import label_map_util
 from myapp.object_detection.models4.research.object_detection.utils import visualization_utils as vis_util
 from websocket import create_connection
+from django.views.generic import TemplateView
 
 #ターンエンドフラグの初期化
-turn_end = False
+x = Value('False')
 
+#multiprocessで実行させるためのラッパ関数
 def sptxtDef():
-    if sptxt.SpeechToText():
-        turn_end = True
+    while True:
+        f = sptxt.SpeechToText()
+        if f:
+            print("mmmmmmmmmmmmmmmmmmmグローバル変更成功mmmmmmmmmmmmmmmm")
+            with x.get_lock():
+                x.value = 'True'
+            print(x.value)
+            
 
 #テキストから数値を返す関数 'ACE'→1
 def trump_text_to_num(str1):
@@ -89,6 +98,10 @@ def gen(camera):
 
     #ゲームのステータスを初期化
     field_state = [0,0,0,0,0]
+
+    #ターンエンド宣言のフラグ取得
+    turn_end_thread = Process(target=sptxtDef)
+    turn_end_thread.start()
     
     while(True):
 
@@ -154,7 +167,7 @@ def gen(camera):
                     #手札にAが入っていた場合の考慮
                     if 1 in num_p1:
                         total_num_p1s = (total_num_p1 - 1) + 10
-                    print('プレイヤー１'+str(total_num_p1))
+                    
                 elif xmax<0.5:
                     player_n =  'プレイヤー2'
                     num_p2.append(trump_text_to_num(text[0]))
@@ -162,7 +175,7 @@ def gen(camera):
                     #手札にAが入っていた場合の考慮
                     if 1 in num_p2:
                         total_num_p2s = (total_num_p2 - 1) + 10
-                    print('プレイヤー2')
+                    
                 elif xmax<0.75:
                     player_n =  'プレイヤー3'
                     num_p3.append(trump_text_to_num(text[0]))
@@ -170,7 +183,7 @@ def gen(camera):
                     #手札にAが入っていた場合の考慮
                     if 1 in num_p3:
                         total_num_p3s = (total_num_p3 - 1) + 10
-                    print('プレイヤー3')
+                    
                 else:
                     player_n =  'プレイヤー4'
                     num_p4.append(trump_text_to_num(text[0]))
@@ -178,12 +191,10 @@ def gen(camera):
                     #手札にAが入っていた場合の考慮
                     if 1 in num_p4:
                         total_num_p4s = (total_num_p4 - 1) + 10
-                    print('プレイヤー4')
 
             else:
                 num_dea.append(trump_text_to_num(text[0]))
                 total_num_dea = total_num_dea + (trump_text_to_num(text[0]))
-                print('ディーラーカード')
 
             print(ymin, xmin, ymax, xmax)
 
@@ -218,16 +229,14 @@ def gen(camera):
         cv2.putText(frame, str(total_num_p4s), (int(width*0.875), int(height*0.8)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 255), 3)
 
         #ゲームの状態のフラグを取得
-        field_state = tokui.get_state(field_list,turn_end,field_state)
+        field_state = tokui.get_state(field_list,x.value,field_state)
         print('デバッグ：field_state'+str(field_state))
 
         #取得したフラグからチュートリアルのテキストを取得
         tutorial_text = tokui.sakaguti(field_state)
 
-        #ターンエンド宣言のフラグ取得
-        turn_end_thread = Process(target=sptxtDef)
-        turn_end_thread.start()
-        print("マイクデバッグ："+str(turn_end))
+        
+        print("マイクデバッグ："+x.value)
 
 
         #全プレイヤーの手札をもとに戦術の結果を取得する
