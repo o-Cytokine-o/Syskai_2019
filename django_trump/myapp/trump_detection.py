@@ -7,11 +7,17 @@ from myapp import assist
 from myapp import client as cli
 from myapp import speechtext as sptxt
 import threading
+from multiprocessing import Process
 from myapp.object_detection.models4.research.object_detection.utils import label_map_util
 from myapp.object_detection.models4.research.object_detection.utils import visualization_utils as vis_util
 from websocket import create_connection
 
+#ターンエンドフラグの初期化
+turn_end = False
 
+def sptxtDef():
+    if sptxt.SpeechToText():
+        turn_end = True
 
 #テキストから数値を返す関数 'ACE'→1
 def trump_text_to_num(str1):
@@ -83,9 +89,6 @@ def gen(camera):
 
     #ゲームのステータスを初期化
     field_state = [0,0,0,0,0]
-
-    #ターンエンドフラグの初期化
-    turn_end = False
     
     while(True):
 
@@ -221,14 +224,11 @@ def gen(camera):
         #取得したフラグからチュートリアルのテキストを取得
         tutorial_text = tokui.sakaguti(field_state)
 
-        turn_end_thread = threading.Thread(target=sptxt.SpeechToText)
         #ターンエンド宣言のフラグ取得
-        if turn_end == True:
-            debug_str = ""
-            
-            #turn_end,debug_str = sptxt.SpeechToText()
-            turn_end = turn_end_thread.start()
-            print("マイクデバッグ："+str(debug_str))
+        turn_end_thread = Process(target=sptxtDef)
+        turn_end_thread.start()
+        print("マイクデバッグ："+str(turn_end))
+
 
         #全プレイヤーの手札をもとに戦術の結果を取得する
         #カードが配布された後、アシストを表示する

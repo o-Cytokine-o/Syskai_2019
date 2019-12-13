@@ -24,14 +24,12 @@ def SpeechToText():
             print(r.recognize_google(audio, language='ja-JP'))
             
             if r.recognize_google(audio, language='ja-JP') in "ターンエンド" :
-                yield True
+                return True
                 break
 
         except sr.UnknownValueError:
             print("could not understand audio")
-            yield True
+            return False
         except sr.RequestError as e:
             print("Could not request results from Google Speech Recognition service; {0}".format(e))
-            yield True
-
-        yield True
+            return False
