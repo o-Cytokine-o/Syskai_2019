@@ -49,16 +49,34 @@ body{
 
 .c1{
     color:#fff;
+    margin-top: 1%;
     /*border: double #ADA250;*/
 }
 
 .info1{
-    font-size: 150%;
-    padding-top: 1.5%;
-    padding-bottom: 1.5%;
     border-bottom: solid 2px #585858;
 }
 
+.info1 p{
+    font-size: 150%;
+    display: inline-block;
+}
+
+.button{
+    border: solid 3px #585858;
+    text-decoration: none;
+    color: #fff;
+    display: inline-block;
+    margin-left: 66%;
+    padding: 5px;
+}
+
+.button:hover{
+    text-decoration: none;
+    color: #fff; 
+    background-color: #585858;
+    transition: all 0.3s ease 0s;
+}
 /*
 .subtitle{
     text-align: right;
