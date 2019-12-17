@@ -15,17 +15,17 @@ from websocket import create_connection
 from django.views.generic import TemplateView
 
 #ターンエンドフラグの初期化
-x = Value('False')
+x = Value('b')
 
 #multiprocessで実行させるためのラッパ関数
 def sptxtDef():
     while True:
         f = sptxt.SpeechToText()
-        if f:
+        if True:
             print("mmmmmmmmmmmmmmmmmmmグローバル変更成功mmmmmmmmmmmmmmmm")
             with x.get_lock():
-                x.value = 'True'
-            print(x.value)
+                x.value = False
+            print(str(x.value))
             
 
 #テキストから数値を返す関数 'ACE'→1
@@ -153,7 +153,6 @@ def gen(camera):
         #認識したカードの数字を合計する
         for item in box.items():
             text = item[1][0].split(':')
-            print(text[0])
 
             ymin, xmin, ymax, xmax = item[0]
 
@@ -196,7 +195,7 @@ def gen(camera):
                 num_dea.append(trump_text_to_num(text[0]))
                 total_num_dea = total_num_dea + (trump_text_to_num(text[0]))
 
-            print(ymin, xmin, ymax, xmax)
+            #print(ymin, xmin, ymax, xmax)
 
         #全プレイヤーのカードのデータ
         if len(num_dea)==0:
@@ -236,7 +235,7 @@ def gen(camera):
         tutorial_text = tokui.sakaguti(field_state)
 
         
-        print("マイクデバッグ："+x.value)
+        print("マイクデバッグ："+str(x.value))
 
 
         #全プレイヤーの手札をもとに戦術の結果を取得する
