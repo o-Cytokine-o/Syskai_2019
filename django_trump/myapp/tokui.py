@@ -79,7 +79,7 @@ def get_state(field_list,turn,field_state):
                 pre_player=field_state[cnt-1]
                 if (i==1)and(pre_player==2):
                     field_state[cnt]=2
-                    turn_end=False
+                    turn=False
                     break
             cnt+=1
 
@@ -89,4 +89,4 @@ def get_state(field_list,turn,field_state):
     if field_state[0]==3 and sum(field_list[0])>=17:
         field_state = [3 for i in range(5)]
     
-    return field_state
+    return field_state,turn

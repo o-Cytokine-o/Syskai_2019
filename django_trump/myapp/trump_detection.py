@@ -2,6 +2,7 @@ import os
 import tensorflow as tf
 import numpy as np
 import cv2
+import time
 from myapp import tokui
 from myapp import assist
 from myapp import client as cli
@@ -15,18 +16,16 @@ from websocket import create_connection
 from django.views.generic import TemplateView
 
 #ターンエンドフラグの初期化
-x = Value('b')
+turn_frag = Value('b',False)
 
 #multiprocessで実行させるためのラッパ関数
-def sptxtDef():
+def sptxtDef(turn_frag):
     while True:
         f = sptxt.SpeechToText()
-        if True:
+        if f:
             print("mmmmmmmmmmmmmmmmmmmグローバル変更成功mmmmmmmmmmmmmmmm")
-            with x.get_lock():
-                x.value = False
-            print(str(x.value))
-            
+            turn_frag.value = True
+
 
 #テキストから数値を返す関数 'ACE'→1
 def trump_text_to_num(str1):
@@ -99,8 +98,8 @@ def gen(camera):
     #ゲームのステータスを初期化
     field_state = [0,0,0,0,0]
 
-    #ターンエンド宣言のフラグ取得
-    turn_end_thread = Process(target=sptxtDef)
+    #ターンエンド宣言フラグ`取得関数のの並列実行
+    turn_end_thread = Process(target=sptxtDef, args=[turn_frag,])
     turn_end_thread.start()
     
     while(True):
@@ -228,15 +227,13 @@ def gen(camera):
         cv2.putText(frame, str(total_num_p4s), (int(width*0.875), int(height*0.8)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 255), 3)
 
         #ゲームの状態のフラグを取得
-        field_state = tokui.get_state(field_list,x.value,field_state)
+        field_state,turn_frag.value = tokui.get_state(field_list,bool(turn_frag.value),field_state)
         print('デバッグ：field_state'+str(field_state))
 
         #取得したフラグからチュートリアルのテキストを取得
         tutorial_text = tokui.sakaguti(field_state)
-
         
-        print("マイクデバッグ："+str(x.value))
-
+        print("マイクデバッグ："+str(bool(turn_frag.value)))
 
         #全プレイヤーの手札をもとに戦術の結果を取得する
         #カードが配布された後、アシストを表示する
