@@ -10,8 +10,8 @@ from myapp import speechtext as sptxt
 import threading
 from multiprocessing import Process
 from multiprocessing import Value
-from myapp.object_detection.models4.research.object_detection.utils import label_map_util
-from myapp.object_detection.models4.research.object_detection.utils import visualization_utils as vis_util
+from myapp.object_detection.models7.research.object_detection.utils import label_map_util
+from myapp.object_detection.models7.research.object_detection.utils import visualization_utils as vis_util
 from websocket import create_connection
 from django.views.generic import TemplateView
 
@@ -46,10 +46,10 @@ def gen(camera):
 
     # Path to frozen detection graph .pb file, which contains the model that is used
     # for object detection.
-    PATH_TO_CKPT = os.path.join(CWD_PATH,'myapp','object_detection','models4','research','object_detection','inference_graph','frozen_inference_graph.pb')
+    PATH_TO_CKPT = os.path.join(CWD_PATH,'myapp','object_detection','models7','research','object_detection','inference_graph','frozen_inference_graph.pb')
 
     # Path to label map file
-    PATH_TO_LABELS = os.path.join(CWD_PATH,'myapp','object_detection','models4','research','object_detection','training','labelmap.pbtxt')
+    PATH_TO_LABELS = os.path.join(CWD_PATH,'myapp','object_detection','models7','research','object_detection','training','labelmap.pbtxt')
 
     # Number of classes the object detector can identify
     NUM_CLASSES = 13
