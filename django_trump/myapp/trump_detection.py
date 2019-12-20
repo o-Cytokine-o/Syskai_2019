@@ -206,16 +206,53 @@ def gen(camera):
         height = frame.shape[0]
         width = frame.shape[1]
 
-        #映像にそれぞれのプレイヤーの手札の合計値を表示する
-        cv2.putText(frame, str(total_num_p1), (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
-        cv2.putText(frame, str(total_num_p2), (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
-        cv2.putText(frame, str(total_num_p3), (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
-        cv2.putText(frame, str(total_num_p4), (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
+        #ゲームが終わったときに勝敗を表示する
+        if field_state[:-1] == 3:
 
-        cv2.putText(frame, str(total_num_p1s), (int(width*0.125), int(height*0.8)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 255), 3)
-        cv2.putText(frame, str(total_num_p2s), (int(width*0.375), int(height*0.8)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 255), 3)
-        cv2.putText(frame, str(total_num_p3s), (int(width*0.625), int(height*0.8)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 255), 3)
-        cv2.putText(frame, str(total_num_p4s), (int(width*0.875), int(height*0.8)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 255), 3)
+            #プレイヤー１エリア
+            if field_list[1] > field_list[0]:
+                cv2.putText(frame, 'win', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
+            elif field_list[1] > field_list[0]:
+                cv2.putText(frame, 'lose', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (70, 157, 250), 3)
+            else:
+                cv2.putText(frame, 'drow', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (70, 157, 250), 3)
+
+            #プレイヤー2エリア
+            if field_list[2] > field_list[0]:
+                cv2.putText(frame, 'win', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (70, 157, 250), 3)
+            elif field_list[2] > field_list[0]:
+                cv2.putText(frame, 'lose', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (70, 157, 250), 3)
+            else:
+                cv2.putText(frame, 'drow', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (70, 157, 250), 3)
+
+            #プレイヤー3エリア
+            if field_list[3] > field_list[0]:
+                cv2.putText(frame, 'win', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (70, 157, 250), 3)
+            elif field_list[3] > field_list[0]:
+                cv2.putText(frame, 'lose', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (70, 157, 250), 3)
+            else:
+                cv2.putText(frame, 'drow', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (70, 157, 250), 3)
+
+            #プレイヤー4エリア
+            if field_list[4] > field_list[0]:
+                cv2.putText(frame, 'win', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (70, 157, 250), 3)
+            elif field_list[4] > field_list[0]:
+                cv2.putText(frame, 'lose', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (70, 157, 250), 3)
+            else:
+                cv2.putText(frame, 'drow', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (70, 157, 250), 3)
+        
+        #映像にそれぞれのプレイヤーの手札の合計値を表示する
+        else:
+
+            cv2.putText(frame, str(total_num_p1), (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
+            cv2.putText(frame, str(total_num_p2), (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
+            cv2.putText(frame, str(total_num_p3), (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
+            cv2.putText(frame, str(total_num_p4), (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
+
+            cv2.putText(frame, str(total_num_p1s), (int(width*0.125), int(height*0.8)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 255), 3)
+            cv2.putText(frame, str(total_num_p2s), (int(width*0.375), int(height*0.8)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 255), 3)
+            cv2.putText(frame, str(total_num_p3s), (int(width*0.625), int(height*0.8)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 255), 3)
+            cv2.putText(frame, str(total_num_p4s), (int(width*0.875), int(height*0.8)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 255), 3)
 
         #ゲームの状態のフラグを取得
         field_state = tokui.get_state(field_list,turn_end,field_state)
