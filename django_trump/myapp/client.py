@@ -3,7 +3,7 @@ import urllib.parse
 from websocket import create_connection
 
 def send_data(ws,data1,data2):
-    print('クライアントデバッグ：'+ urllib.parse.unquote(str(data1))+':'+urllib.parse.unquote(str(data2)))
+    #print('クライアントデバッグ：'+ urllib.parse.unquote(str(data1))+':'+urllib.parse.unquote(str(data2)))
     #dataに入っている文字列を全て組み合わせる
     text1 = ''
     text2 = ''

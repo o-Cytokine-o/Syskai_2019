@@ -43,22 +43,48 @@ body{
 .side{
     border: solid 2px #585858;
     background-color: #585858;
-    padding: 2%;
+    padding: 2%;font-weight: bold;
+    font-family: 'ＭＳ ゴシック';
 }
     
 
 .c1{
     color:#fff;
+    margin-top: 1%;
     /*border: double #ADA250;*/
 }
 
 .info1{
-    font-size: 150%;
-    padding-top: 1.5%;
-    padding-bottom: 1.5%;
     border-bottom: solid 2px #585858;
+    margin-bottom: 3%;
 }
 
+.info1 p{
+    font-size: 150%;
+    display: inline-block;
+    font-weight: bold;
+    font-family: 'ＭＳ ゴシック';
+}
+
+.button{
+    border: solid 3px #0f99d4;
+    background-color: #0f99d4;
+    text-decoration: none;
+    color: #fff;
+    margin-left: 63%;
+    margin-right: -66%;
+    display: inline-block;
+    padding: 5px 20px;
+    transition: background-color 0.5s, border-radius 0.3s;
+}
+
+.button:hover{
+    text-decoration: none;
+    color: #fff; 
+    background-color: #0f99d4;
+    transition: background-color 1s, border-radius 0.5s;
+    border-radius: 20px 20px 20px 20px/20px 20px 20px 20px;
+}
 /*
 .subtitle{
     text-align: right;

@@ -2,22 +2,30 @@ import os
 import tensorflow as tf
 import numpy as np
 import cv2
+import time
 from myapp import tokui
 from myapp import assist
 from myapp import client as cli
 from myapp import speechtext as sptxt
 import threading
 from multiprocessing import Process
-from myapp.object_detection.models4.research.object_detection.utils import label_map_util
-from myapp.object_detection.models4.research.object_detection.utils import visualization_utils as vis_util
+from multiprocessing import Value
+from myapp.object_detection.models7.research.object_detection.utils import label_map_util
+from myapp.object_detection.models7.research.object_detection.utils import visualization_utils as vis_util
 from websocket import create_connection
+from django.views.generic import TemplateView
 
 #ターンエンドフラグの初期化
-turn_end = False
+turn_frag = Value('b',False)
 
-def sptxtDef():
-    if sptxt.SpeechToText():
-        turn_end = True
+#multiprocessで実行させるためのラッパ関数
+def sptxtDef(turn_frag):
+    while True:
+        f = sptxt.SpeechToText()
+        if f:
+            print("mmmmmmmmmmmmmmmmmmmグローバル変更成功mmmmmmmmmmmmmmmm")
+            turn_frag.value = True
+
 
 #テキストから数値を返す関数 'ACE'→1
 def trump_text_to_num(str1):
@@ -38,10 +46,10 @@ def gen(camera):
 
     # Path to frozen detection graph .pb file, which contains the model that is used
     # for object detection.
-    PATH_TO_CKPT = os.path.join(CWD_PATH,'myapp','object_detection','models4','research','object_detection','inference_graph','frozen_inference_graph.pb')
+    PATH_TO_CKPT = os.path.join(CWD_PATH,'myapp','object_detection','models7','research','object_detection','inference_graph','frozen_inference_graph.pb')
 
     # Path to label map file
-    PATH_TO_LABELS = os.path.join(CWD_PATH,'myapp','object_detection','models4','research','object_detection','training','labelmap.pbtxt')
+    PATH_TO_LABELS = os.path.join(CWD_PATH,'myapp','object_detection','models7','research','object_detection','training','labelmap.pbtxt')
 
     # Number of classes the object detector can identify
     NUM_CLASSES = 13
@@ -89,6 +97,10 @@ def gen(camera):
 
     #ゲームのステータスを初期化
     field_state = [0,0,0,0,0]
+
+    #ターンエンド宣言フラグ`取得関数のの並列実行
+    turn_end_thread = Process(target=sptxtDef, args=[turn_frag,])
+    turn_end_thread.start()
     
     while(True):
 
@@ -140,7 +152,6 @@ def gen(camera):
         #認識したカードの数字を合計する
         for item in box.items():
             text = item[1][0].split(':')
-            print(text[0])
 
             ymin, xmin, ymax, xmax = item[0]
 
@@ -154,7 +165,7 @@ def gen(camera):
                     #手札にAが入っていた場合の考慮
                     if 1 in num_p1:
                         total_num_p1s = (total_num_p1 - 1) + 10
-                    print('プレイヤー１'+str(total_num_p1))
+                    
                 elif xmax<0.5:
                     player_n =  'プレイヤー2'
                     num_p2.append(trump_text_to_num(text[0]))
@@ -162,7 +173,7 @@ def gen(camera):
                     #手札にAが入っていた場合の考慮
                     if 1 in num_p2:
                         total_num_p2s = (total_num_p2 - 1) + 10
-                    print('プレイヤー2')
+                    
                 elif xmax<0.75:
                     player_n =  'プレイヤー3'
                     num_p3.append(trump_text_to_num(text[0]))
@@ -170,7 +181,7 @@ def gen(camera):
                     #手札にAが入っていた場合の考慮
                     if 1 in num_p3:
                         total_num_p3s = (total_num_p3 - 1) + 10
-                    print('プレイヤー3')
+                    
                 else:
                     player_n =  'プレイヤー4'
                     num_p4.append(trump_text_to_num(text[0]))
@@ -178,14 +189,12 @@ def gen(camera):
                     #手札にAが入っていた場合の考慮
                     if 1 in num_p4:
                         total_num_p4s = (total_num_p4 - 1) + 10
-                    print('プレイヤー4')
 
             else:
                 num_dea.append(trump_text_to_num(text[0]))
                 total_num_dea = total_num_dea + (trump_text_to_num(text[0]))
-                print('ディーラーカード')
 
-            print(ymin, xmin, ymax, xmax)
+            #print(ymin, xmin, ymax, xmax)
 
         #全プレイヤーのカードのデータ
         if len(num_dea)==0:
@@ -255,17 +264,13 @@ def gen(camera):
             cv2.putText(frame, str(total_num_p4s), (int(width*0.875), int(height*0.8)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 255), 3)
 
         #ゲームの状態のフラグを取得
-        field_state = tokui.get_state(field_list,turn_end,field_state)
+        field_state,turn_frag.value = tokui.get_state(field_list,bool(turn_frag.value),field_state)
         print('デバッグ：field_state'+str(field_state))
 
         #取得したフラグからチュートリアルのテキストを取得
         tutorial_text = tokui.sakaguti(field_state)
-
-        #ターンエンド宣言のフラグ取得
-        turn_end_thread = Process(target=sptxtDef)
-        turn_end_thread.start()
-        print("マイクデバッグ："+str(turn_end))
-
+        
+        print("マイクデバッグ："+str(bool(turn_frag.value)))
 
         #全プレイヤーの手札をもとに戦術の結果を取得する
         #カードが配布された後、アシストを表示する
