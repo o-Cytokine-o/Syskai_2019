@@ -105,7 +105,12 @@ def gen(camera):
     while(True):
 
         ret, frame = camera.video.read()
+        height = frame.shape[0]
+        width = frame.shape[1]
+        print(height,width)
+        frame = frame[int(height*0.125):int(height*0.875), :]
         frame_expanded = np.expand_dims(frame, axis=0)
+
 
         # Perform the actual detection by running the model with the image as input
         (boxes, scores, classes, num) = sess.run(
@@ -216,39 +221,39 @@ def gen(camera):
         width = frame.shape[1]
 
         #ゲームが終わったときに勝敗を表示する
-        if field_state[:-1] == 3:
+        if field_state[0] == 3 and field_state[-1] == 3:
 
             #プレイヤー１エリア
-            if field_list[1] > field_list[0]:
-                cv2.putText(frame, 'win', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
-            elif field_list[1] > field_list[0]:
-                cv2.putText(frame, 'lose', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (70, 157, 250), 3)
+            if sum(field_list[1]) > sum(field_list[0]):
+                cv2.putText(frame, 'win', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+            elif sum(field_list[1]) < sum(field_list[0]):
+                cv2.putText(frame, 'lose', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
             else:
-                cv2.putText(frame, 'drow', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (70, 157, 250), 3)
+                cv2.putText(frame, 'drow', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
 
             #プレイヤー2エリア
-            if field_list[2] > field_list[0]:
-                cv2.putText(frame, 'win', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (70, 157, 250), 3)
-            elif field_list[2] > field_list[0]:
-                cv2.putText(frame, 'lose', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (70, 157, 250), 3)
+            if sum(field_list[2]) > sum(field_list[0]):
+                cv2.putText(frame, 'win', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+            elif sum(field_list[2]) < sum(field_list[0]):
+                cv2.putText(frame, 'lose', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
             else:
-                cv2.putText(frame, 'drow', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (70, 157, 250), 3)
+                cv2.putText(frame, 'drow', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
 
             #プレイヤー3エリア
-            if field_list[3] > field_list[0]:
-                cv2.putText(frame, 'win', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (70, 157, 250), 3)
-            elif field_list[3] > field_list[0]:
-                cv2.putText(frame, 'lose', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (70, 157, 250), 3)
+            if sum(field_list[3]) > sum(field_list[0]):
+                cv2.putText(frame, 'win', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+            elif sum(field_list[3]) < sum(field_list[0]):
+                cv2.putText(frame, 'lose', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
             else:
-                cv2.putText(frame, 'drow', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (70, 157, 250), 3)
+                cv2.putText(frame, 'drow', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
 
             #プレイヤー4エリア
-            if field_list[4] > field_list[0]:
-                cv2.putText(frame, 'win', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (70, 157, 250), 3)
-            elif field_list[4] > field_list[0]:
-                cv2.putText(frame, 'lose', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (70, 157, 250), 3)
+            if sum(field_list[4]) > sum(field_list[0]):
+                cv2.putText(frame, 'win', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+            elif sum(field_list[4]) < sum(field_list[0]):
+                cv2.putText(frame, 'lose', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
             else:
-                cv2.putText(frame, 'drow', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (70, 157, 250), 3)
+                cv2.putText(frame, 'drow', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
         
         #映像にそれぞれのプレイヤーの手札の合計値を表示する
         else:
@@ -258,13 +263,14 @@ def gen(camera):
             cv2.putText(frame, str(total_num_p3), (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
             cv2.putText(frame, str(total_num_p4), (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
 
+            #手札にAがあった場合
             cv2.putText(frame, str(total_num_p1s), (int(width*0.125), int(height*0.8)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 255), 3)
             cv2.putText(frame, str(total_num_p2s), (int(width*0.375), int(height*0.8)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 255), 3)
             cv2.putText(frame, str(total_num_p3s), (int(width*0.625), int(height*0.8)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 255), 3)
             cv2.putText(frame, str(total_num_p4s), (int(width*0.875), int(height*0.8)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 255), 3)
 
         #ゲームの状態のフラグを取得
-        field_state,turn_frag.value = tokui.get_state(field_list,bool(turn_frag.value),field_state)
+        field_state,turn_frag.value = tokui.get_state(field_list,True,field_state)
         print('デバッグ：field_state'+str(field_state))
 
         #取得したフラグからチュートリアルのテキストを取得

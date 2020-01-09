@@ -48,17 +48,14 @@ def get_state(field_list,turn,field_state):
     #2:そのプレイヤーのターン終了した
     #3:全プレイヤーのターンが終了した
     
-    
-    
-    """ global field_state #関数内グローバル変数宣言
-    global turn_end  """
     cnt=0 #カウンタ初期化
     
     #カード配っていない
-    for i in field_list:
-        if (0 in i)or(len(i)==1):
-            field_state[cnt]=0
-        cnt+=1
+    if 3 not in field_state: #ゲーム終了フラグでないとき
+        for i in field_list:
+            if (0 in i)or(len(i)==1):
+                field_state[cnt]=0
+            cnt+=1
     
     #全員配り終わった
     cnt=0
@@ -67,7 +64,7 @@ def get_state(field_list,turn,field_state):
             if (len(i)==1)and(field_state[cnt]==0)and(field_list[0][0]!=0):
                 field_state[cnt]=2
         else:    
-            if (len(i)==2)and(field_state[cnt]!=2):
+            if (len(i)==2)and(field_state[cnt]==0):
                 field_state[cnt]=1
         cnt+=1
     
