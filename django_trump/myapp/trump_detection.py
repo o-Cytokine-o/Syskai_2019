@@ -224,7 +224,7 @@ def gen(camera):
         if field_state[0] == 3 and field_state[-1] == 3:
 
             #プレイヤー１エリア
-            if sum(field_list[1]) > sum(field_list[0]):
+            if (sum(field_list[1]) > sum(field_list[0])) or (21<sum(field_list[0])):
                 cv2.putText(frame, 'win', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
             elif sum(field_list[1]) < sum(field_list[0]):
                 cv2.putText(frame, 'lose', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
@@ -232,7 +232,7 @@ def gen(camera):
                 cv2.putText(frame, 'drow', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
 
             #プレイヤー2エリア
-            if sum(field_list[2]) > sum(field_list[0]):
+            if (sum(field_list[2]) > sum(field_list[0])) or (21<sum(field_list[0])):
                 cv2.putText(frame, 'win', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
             elif sum(field_list[2]) < sum(field_list[0]):
                 cv2.putText(frame, 'lose', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
@@ -240,7 +240,7 @@ def gen(camera):
                 cv2.putText(frame, 'drow', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
 
             #プレイヤー3エリア
-            if sum(field_list[3]) > sum(field_list[0]):
+            if (sum(field_list[3]) > sum(field_list[0])) or (21<sum(field_list[0])):
                 cv2.putText(frame, 'win', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
             elif sum(field_list[3]) < sum(field_list[0]):
                 cv2.putText(frame, 'lose', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
@@ -248,7 +248,7 @@ def gen(camera):
                 cv2.putText(frame, 'drow', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
 
             #プレイヤー4エリア
-            if sum(field_list[4]) > sum(field_list[0]):
+            if (sum(field_list[4]) > sum(field_list[0])) or (21<sum(field_list[0])):
                 cv2.putText(frame, 'win', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
             elif sum(field_list[4]) < sum(field_list[0]):
                 cv2.putText(frame, 'lose', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
