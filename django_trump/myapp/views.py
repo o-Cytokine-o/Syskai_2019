@@ -21,6 +21,13 @@ def game(request):
     }
     return render(request,'game.html', params)
 
+def game2(request):
+    params = { # <- 渡したい変数を辞書型オブジェクトに格納
+        'title': 'Hi Django!',
+        'subtitle': 'This is my 1st Django app.',
+    }
+    return render(request,'game2.html', params)
+
 class VideoCamera(object):
     def __init__(self):
         self.video = cv2.VideoCapture(0)

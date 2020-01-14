@@ -1,0 +1,145 @@
+body{
+    background-color: #433D3C;
+}
+
+.main-div{
+   max-width: 1400px;
+}
+
+.r1 {
+    margin-top: 20px;
+}
+
+.r2 {
+    margin-top: 10px;
+}
+
+.game{
+    margin: 0 auto;
+    width: 100%;
+}
+
+.assist{
+    color:#fff;
+    text-align: left;
+    width: 300px;
+    border: solid 0.7px #565252;
+    padding: 0;
+    margin-bottom: 10%;
+}
+
+.assistTop {
+    color:#c0c0c0;
+    font-size: 12px;
+
+}
+
+.assist p{
+    margin-top: 5%;
+    margin-left: 5%;
+    font-size: 16px;
+}
+
+.side{
+    border: solid 2px #585858;
+    background-color: #585858;
+    padding: 2%;font-weight: bold;
+    font-family: 'ＭＳ ゴシック';
+}
+    
+
+.c1{
+    color:#fff;
+    margin-top: 1%;
+    /*border: double #ADA250;*/
+}
+
+.info1 a{
+	margin-left: 55%;
+}
+/*
+.info2{
+	margin-top: 2%;
+}
+*/
+
+
+.info1 p{
+    font-size: 150%;
+    display: inline-block;
+    font-weight: bold;
+    font-family: 'ＭＳ ゴシック';
+}
+
+.button{
+    border: solid 3px #0f99d4;
+    background-color: #0f99d4;
+    text-decoration: none;
+    color: #fff;
+    margin-left: 63%;
+    margin-right: -66%;
+    display: inline-block;
+    padding: 5px 20px;
+    transition: background-color 0.5s, border-radius 0.3s;
+}
+
+.button:hover{
+    text-decoration: none;
+    color: #fff; 
+    background-color: #0f99d4;
+    transition: background-color 1s, border-radius 0.5s;
+    border-radius: 20px 20px 20px 20px/20px 20px 20px 20px;
+}
+/*
+.subtitle{
+    text-align: right;
+}
+*/
+
+/*固定チュートリアル*/
+
+
+.menu {
+    margin: 1%;
+    max-width: 400px;
+    padding: 0;
+    margin-right: 5%;
+    margin-top: -10%;
+}
+
+label {
+    display: block;
+    padding: 12px 12px 8px 12px;
+    line-height: 1;
+    color:#fff;
+    /*border-bottom: solid 2px #585858;*/
+    font-size: 120%;
+    margin: -4px -3px 0px 0px;
+}
+
+input {
+    display: none;
+}
+
+#menu_bar02 {
+    margin-top: 2%;
+}
+
+#menu_bar03 {
+    margin-top: 2%;
+}
+
+.menu ul {
+    margin-bottom: 2%;
+    padding: 0 0 0 20px;
+    color:#c0c0c0;
+    list-style: square;
+    list-style-type: none;
+}
+
+#menu_bar01:checked ~ #links01 li,
+#menu_bar02:checked ~ #links02 li,
+#menu_bar03:checked ~ #links03 li {
+    max-height: 46px;
+    opacity: 1;
+}
