@@ -15,7 +15,7 @@
       <div class="row r1">
         <!--- 画像認識表示 -->
         <div class='col-8 game-screen'>
-            <img src="{% url 'myapp:view_OD' %}" class="game">
+            <img src="{% url 'myapp:view_OD_no_tut' %}" class="game">
         </div>
   
         <!--- アシスト表示 --->
@@ -36,7 +36,7 @@
         <div class="row r2">
         <!--- チュートリアル表示 --->
         <div class="col c1">
-          <div class="info1"><p>ベーシックストラテジ</p><a href="{% url 'myapp:game'%}" class="button">リセット</a></div>
+          <div class="info1"><p>ベーシックストラテジ</p><a href="{% url 'myapp:game2'%}" class="button">リセット</a></div>
         <!--</div>
         <div class="col c2">-->
           <div class="info2"><img src="{% static 'img/basic.png' %}" class="panel"></div>

@@ -31,8 +31,8 @@ def game2(request):
 class VideoCamera(object):
     def __init__(self):
         self.video = cv2.VideoCapture(0)
-        ret = self.video.set(3,900)
-        ret = self.video.set(4,677)
+        ret = self.video.set(3,1920)
+        ret = self.video.set(4,1080)
         
     def __del__(self):
         self.video.release()
@@ -40,6 +40,13 @@ class VideoCamera(object):
 @gzip.gzip_page
 def view_OD(request): 
     try:
-        return StreamingHttpResponse(trd.gen(VideoCamera()),content_type="multipart/x-mixed-replace;boundary=frame")
+        return StreamingHttpResponse(trd.gen(VideoCamera(),True),content_type="multipart/x-mixed-replace;boundary=frame")
+    except HttpResponseServerError as e:
+        print("aborted")
+
+@gzip.gzip_page
+def view_OD_no_tut(request): 
+    try:
+        return StreamingHttpResponse(trd.gen(VideoCamera(),False),content_type="multipart/x-mixed-replace;boundary=frame")
     except HttpResponseServerError as e:
         print("aborted")

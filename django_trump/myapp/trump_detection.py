@@ -28,7 +28,7 @@ def sptxtDef(turn_frag):
             turn_frag.value = True
 
 
-#テキストから数値を返す関数 'ACE'→1
+#テキストから数値を返す関数 'ACE'→1,'two'→2
 def trump_text_to_num(str1):
     class_names = ['ace','two','three','four','five','six','seven','eight','nine','ten','jack','queen','king']
     if int(class_names.index(str1)+1) >= 10:
@@ -37,7 +37,7 @@ def trump_text_to_num(str1):
         return int(class_names.index(str1)+1)
 
 
-def gen(camera):
+def gen(camera,tut_frag):
 
     # Name of the directory containing the object detection module we're using
     MODEL_NAME = 'inference_graph'
@@ -109,7 +109,7 @@ def gen(camera):
         height = frame.shape[0]
         width = frame.shape[1]
         print(height,width)
-        frame = frame[int(height*0.125):int(height*0.875), :]
+        frame = frame[int(height*0.13):int(height*0.88),int(width*0.170):int(width*0.930)]
         frame_expanded = np.expand_dims(frame, axis=0)
 
 
@@ -171,7 +171,7 @@ def gen(camera):
                     total_num_p1 = total_num_p1 + (trump_text_to_num(text[0]))
                     #手札にAが入っていた場合の考慮
                     if 1 in num_p1:
-                        total_num_p1s = (total_num_p1 - 1) + 10
+                        total_num_p1s = (total_num_p1 - 1) + 11
                     
                 elif xmax<0.5:
                     player_n =  'プレイヤー2'
@@ -179,7 +179,7 @@ def gen(camera):
                     total_num_p2 = total_num_p2 + (trump_text_to_num(text[0]))
                     #手札にAが入っていた場合の考慮
                     if 1 in num_p2:
-                        total_num_p2s = (total_num_p2 - 1) + 10
+                        total_num_p2s = (total_num_p2 - 1) + 11
                     
                 elif xmax<0.75:
                     player_n =  'プレイヤー3'
@@ -187,7 +187,7 @@ def gen(camera):
                     total_num_p3 = total_num_p3 + (trump_text_to_num(text[0]))
                     #手札にAが入っていた場合の考慮
                     if 1 in num_p3:
-                        total_num_p3s = (total_num_p3 - 1) + 10
+                        total_num_p3s = (total_num_p3 - 1) + 11
                     
                 else:
                     player_n =  'プレイヤー4'
@@ -195,7 +195,7 @@ def gen(camera):
                     total_num_p4 = total_num_p4 + (trump_text_to_num(text[0]))
                     #手札にAが入っていた場合の考慮
                     if 1 in num_p4:
-                        total_num_p4s = (total_num_p4 - 1) + 10
+                        total_num_p4s = (total_num_p4 - 1) + 11
 
             else:
                 num_dea.append(trump_text_to_num(text[0]))
@@ -270,7 +270,7 @@ def gen(camera):
                         cv2.putText(frame, 'lose', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
 
             #プレイヤー２の判定
-            if 1 in field_list[1]:
+            if 1 in field_list[2]:
                 if 1 in field_list[0]:
                     if (total_num_p2s <= 21) and (total_num_p2s > total_num_deas) or (21 < total_num_deas):
                         cv2.putText(frame, 'win', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
@@ -313,7 +313,7 @@ def gen(camera):
                         cv2.putText(frame, 'lose', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
 
             #プレイヤー3の判定
-            if 1 in field_list[1]:
+            if 1 in field_list[3]:
                 if 1 in field_list[0]:
                     if (total_num_p3s <= 21) and (total_num_p3s > total_num_deas) or (21 < total_num_deas):
                         cv2.putText(frame, 'win', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
@@ -356,7 +356,7 @@ def gen(camera):
                         cv2.putText(frame, 'lose', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
 
             #プレイヤー4の判定
-            if 1 in field_list[1]:
+            if 1 in field_list[4]:
                 if 1 in field_list[0]:
                     if (total_num_p4s <= 21) and (total_num_p4s > total_num_deas) or (21 < total_num_deas):
                         cv2.putText(frame, 'win', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
@@ -413,7 +413,11 @@ def gen(camera):
             cv2.putText(frame, str(total_num_p4s), (int(width*0.875), int(height*0.8)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 255), 3)
 
         #ゲームの状態のフラグを取得
-        field_state,turn_frag.value = get_state.get_state(field_list,True,field_state)
+        #チュートリアルありとなしの各フラグ処理
+        if tut_frag:
+            field_state,turn_frag.value = get_state.get_state(field_list,bool(turn_frag.value),field_state)
+        else:
+            field_state,turn_frag.value = get_state.get_state(field_list,True,field_state)
         print('デバッグ：field_state'+str(field_state))
 
         #取得したフラグからチュートリアルのテキストを取得
@@ -436,5 +440,7 @@ def gen(camera):
         
         yield(b'--frame\r\n'
         b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+
+        time.sleep(0.1)
     
     ws.close()
