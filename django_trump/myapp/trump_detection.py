@@ -18,14 +18,36 @@ from django.views.generic import TemplateView
 
 #ターンエンドフラグの初期化
 turn_frag = Value('b',False)
+surrender_frag = Value('b',False)
+surrender_list = [0,0,0,0]
+
+#サレンダーを宣言した場合のフラグ処理
+def surrender_def():
+    if surrender_frag.value:
+        cnt = 0
+        for i in field_state:
+                if cnt>0:
+                    pre_player=field_state[cnt-1]
+                    if (i==1)and(pre_player==2):
+                        field_state[cnt]=2
+                        surrender_list[cnt] = 1
+                        surrender_frag.value = False
+                        break
+                cnt+=1
 
 #multiprocessで実行させるためのラッパ関数
 def sptxtDef(turn_frag):
     while True:
         f = sptxt.SpeechToText()
-        if f:
+        if f == 1:
             print("mmmmmmmmmmmmmmmmmmmグローバル変更成功mmmmmmmmmmmmmmmm")
             turn_frag.value = True
+
+        elif f == 2:
+            print("mmmmmmmmmmmmmmmmmmmサレンダー変更成功mmmmmmmmmmmmmmmm")
+            turn_frag.value = True
+            surrender_frag.value = True
+
 
 
 #テキストから数値を返す関数 'ACE'→1,'two'→2
@@ -99,6 +121,13 @@ def gen(camera,tut_frag):
     #ゲームのステータスを初期化
     field_state = [0,0,0,0,0]
 
+    #勝敗結果表示用フォントパラメータ
+    font_color = (0, 181, 48)
+    back_color = (255,255,255)
+    back_th = 15
+    front_th = 5
+    font_size = 2
+
     #ターンエンド宣言フラグ`取得関数のの並列実行
     turn_end_thread = Process(target=sptxtDef, args=[turn_frag,])
     turn_end_thread.start()
@@ -109,7 +138,7 @@ def gen(camera,tut_frag):
         height = frame.shape[0]
         width = frame.shape[1]
         print(height,width)
-        frame = frame[int(height*0.13):int(height*0.88),int(width*0.170):int(width*0.930)]
+        frame = frame[int(height*0.13):int(height*0.88),int(width*0.15):int(width*0.85)]
         frame_expanded = np.expand_dims(frame, axis=0)
 
 
@@ -202,8 +231,6 @@ def gen(camera,tut_frag):
                 total_num_dea = total_num_dea + (trump_text_to_num(text[0]))
                 total_num_deas = total_num_deas + (trump_text_to_num(text[0])) + 10
 
-            #print(ymin, xmin, ymax, xmax)
-
         #全プレイヤーのカードのデータ
         if len(num_dea)==0:
             num_dea = [0]
@@ -218,7 +245,6 @@ def gen(camera,tut_frag):
 
         field_list = np.array([num_dea,num_p1,num_p2,num_p3,num_p4])
         print('デバッグ：field_list'+str(field_list))
-        
 
         height = frame.shape[0]
         width = frame.shape[1]
@@ -230,187 +256,259 @@ def gen(camera,tut_frag):
             if 1 in field_list[1]:
                 if 1 in field_list[0]:
                     if (total_num_p1s <= 21) and (total_num_p1s > total_num_deas) or (21 < total_num_deas):
-                        cv2.putText(frame, 'win', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'win', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'win', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     elif (total_num_p1s <= 21) and (total_num_p1s == total_num_deas):
-                        cv2.putText(frame, 'drow', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'drow', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'drow', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     elif (total_num_p1s > 21) and (total_num_deas > 21):
-                        cv2.putText(frame, 'drow', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'drow', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'drow', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     else:
-                        cv2.putText(frame, 'lose', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'lose', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'lose', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                 
                 else:
                     if (total_num_p1s <= 21) and (total_num_p1s > total_num_dea) or (21 < total_num_dea):
-                        cv2.putText(frame, 'win', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'win', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'win', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     elif (total_num_p1s <= 21) and (total_num_p1s == total_num_dea):
-                        cv2.putText(frame, 'drow', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'drow', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'drow', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     elif (total_num_p1s > 21) and (total_num_dea > 21):
-                        cv2.putText(frame, 'drow', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'drow', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'drow', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     else:
-                        cv2.putText(frame, 'lose', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'lose', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'lose', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
             
             else:
                 if 1 in field_list[0]:
                     if (total_num_p1 <= 21) and (total_num_p1 > total_num_deas) or (21 < total_num_deas):
-                        cv2.putText(frame, 'win', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'win', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'win', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     elif (total_num_p1 <= 21) and (total_num_p1 == total_num_deas):
-                        cv2.putText(frame, 'drow', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'drow', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'drow', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     elif (total_num_p1 > 21) and (total_num_deas > 21):
-                        cv2.putText(frame, 'drow', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'drow', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'drow', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     else:
-                        cv2.putText(frame, 'lose', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'lose', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'lose', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                 
                 else:
                     if (total_num_p1 <= 21) and (total_num_p1 > total_num_dea) or (21 < total_num_dea):
-                        cv2.putText(frame, 'win', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'win', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'win', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     elif (total_num_p1 <= 21) and (total_num_p1 == total_num_dea):
-                        cv2.putText(frame, 'drow', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'drow', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'drow', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     elif (total_num_p1 > 21) and (total_num_dea > 21):
-                        cv2.putText(frame, 'drow', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'drow', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'drow', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     else:
-                        cv2.putText(frame, 'lose', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'lose', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'lose', (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
 
             #プレイヤー２の判定
             if 1 in field_list[2]:
                 if 1 in field_list[0]:
                     if (total_num_p2s <= 21) and (total_num_p2s > total_num_deas) or (21 < total_num_deas):
-                        cv2.putText(frame, 'win', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'win', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'win', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     elif (total_num_p2s <= 21) and (total_num_p2s == total_num_deas):
-                        cv2.putText(frame, 'drow', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'drow', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'drow', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     elif (total_num_p2s > 21) and (total_num_deas > 21):
-                        cv2.putText(frame, 'drow', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'drow', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'drow', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     else:
-                        cv2.putText(frame, 'lose', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'lose', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'lose', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                 
                 else:
                     if (total_num_p2s <= 21) and (total_num_p2s > total_num_dea) or (21 < total_num_dea):
-                        cv2.putText(frame, 'win', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'win', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'win', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     elif (total_num_p2s <= 21) and (total_num_p2s == total_num_dea):
-                        cv2.putText(frame, 'drow', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'drow', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'drow', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     elif (total_num_p2s > 21) and (total_num_dea > 21):
-                        cv2.putText(frame, 'drow', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'drow', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'drow', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     else:
-                        cv2.putText(frame, 'lose', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'lose', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'lose', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
             
             else:
                 if 1 in field_list[0]:
                     if (total_num_p2 <= 21) and (total_num_p2 > total_num_deas) or (21 < total_num_deas):
-                        cv2.putText(frame, 'win', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'win', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'win', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     elif (total_num_p2 <= 21) and (total_num_p2 == total_num_deas):
-                        cv2.putText(frame, 'drow', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'drow', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'drow', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     elif (total_num_p2 > 21) and (total_num_deas > 21):
-                        cv2.putText(frame, 'drow', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'drow', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'drow', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     else:
-                        cv2.putText(frame, 'lose', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'lose', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'lose', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                 
                 else:
                     if (total_num_p2 <= 21) and (total_num_p2 > total_num_dea) or (21 < total_num_dea):
-                        cv2.putText(frame, 'win', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'win', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'win', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     elif (total_num_p2 <= 21) and (total_num_p2 == total_num_dea):
-                        cv2.putText(frame, 'drow', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'drow', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'drow', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     elif (total_num_p2 > 21) and (total_num_dea > 21):
-                        cv2.putText(frame, 'drow', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'drow', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'drow', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     else:
-                        cv2.putText(frame, 'lose', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'lose', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'lose', (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
 
             #プレイヤー3の判定
             if 1 in field_list[3]:
                 if 1 in field_list[0]:
                     if (total_num_p3s <= 21) and (total_num_p3s > total_num_deas) or (21 < total_num_deas):
-                        cv2.putText(frame, 'win', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'win', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'win', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     elif (total_num_p3s <= 21) and (total_num_p3s == total_num_deas):
-                        cv2.putText(frame, 'drow', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'drow', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'drow', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     elif (total_num_p3s > 21) and (total_num_deas > 21):
-                        cv2.putText(frame, 'drow', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'drow', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'drow', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     else:
-                        cv2.putText(frame, 'lose', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'lose', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'lose', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                 
                 else:
                     if (total_num_p3s <= 21) and (total_num_p3s > total_num_dea) or (21 < total_num_dea):
-                        cv2.putText(frame, 'win', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'win', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'win', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     elif (total_num_p3s <= 21) and (total_num_p3s == total_num_dea):
-                        cv2.putText(frame, 'drow', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'drow', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'drow', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     elif (total_num_p3s > 21) and (total_num_dea > 21):
-                        cv2.putText(frame, 'drow', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'drow', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'drow', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     else:
-                        cv2.putText(frame, 'lose', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'lose', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'lose', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
             
             else:
                 if 1 in field_list[0]:
                     if (total_num_p3 <= 21) and (total_num_p3 > total_num_deas) or (21 < total_num_deas):
-                        cv2.putText(frame, 'win', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'win', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'win', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     elif (total_num_p3 <= 21) and (total_num_p3 == total_num_deas):
-                        cv2.putText(frame, 'drow', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'drow', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'drow', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     elif (total_num_p3 > 21) and (total_num_deas > 21):
-                        cv2.putText(frame, 'drow', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'drow', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'drow', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     else:
-                        cv2.putText(frame, 'lose', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'lose', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'lose', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                 
                 else:
                     if (total_num_p3 <= 21) and (total_num_p3 > total_num_dea) or (21 < total_num_dea):
-                        cv2.putText(frame, 'win', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'win', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'win', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     elif (total_num_p3 <= 21) and (total_num_p3 == total_num_dea):
-                        cv2.putText(frame, 'drow', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'drow', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'drow', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     elif (total_num_p3 > 21) and (total_num_dea > 21):
-                        cv2.putText(frame, 'drow', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'drow', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'drow', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     else:
-                        cv2.putText(frame, 'lose', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'lose', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'lose', (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
 
             #プレイヤー4の判定
             if 1 in field_list[4]:
                 if 1 in field_list[0]:
                     if (total_num_p4s <= 21) and (total_num_p4s > total_num_deas) or (21 < total_num_deas):
-                        cv2.putText(frame, 'win', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'win', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'win', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     elif (total_num_p4s <= 21) and (total_num_p4s == total_num_deas):
-                        cv2.putText(frame, 'drow', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'drow', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'drow', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     elif (total_num_p4s > 21) and (total_num_deas > 21):
-                        cv2.putText(frame, 'drow', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'drow', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'drow', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     else:
-                        cv2.putText(frame, 'lose', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'lose', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'lose', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                 
                 else:
                     if (total_num_p4s <= 21) and (total_num_p4s > total_num_dea) or (21 < total_num_dea):
-                        cv2.putText(frame, 'win', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'win', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'win', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     elif (total_num_p4s <= 21) and (total_num_p4s == total_num_dea):
-                        cv2.putText(frame, 'drow', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'drow', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'drow', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     elif (total_num_p4s > 21) and (total_num_dea > 21):
-                        cv2.putText(frame, 'drow', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'drow', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'drow', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     else:
-                        cv2.putText(frame, 'lose', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'lose', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'lose', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
             
             else:
                 if 1 in field_list[0]:
                     if (total_num_p4 <= 21) and (total_num_p4 > total_num_deas) or (21 < total_num_deas):
-                        cv2.putText(frame, 'win', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'win', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'win', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     elif (total_num_p4 <= 21) and (total_num_p4 == total_num_deas):
-                        cv2.putText(frame, 'drow', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'drow', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'drow', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     elif (total_num_p4 > 21) and (total_num_deas > 21):
-                        cv2.putText(frame, 'drow', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'drow', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'drow', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     else:
-                        cv2.putText(frame, 'lose', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'lose', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'lose', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                 
                 else:
                     if (total_num_p4 <= 21) and (total_num_p4 > total_num_dea) or (21 < total_num_dea):
-                        cv2.putText(frame, 'win', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'win', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'win', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     elif (total_num_p4 <= 21) and (total_num_p4 == total_num_dea):
-                        cv2.putText(frame, 'drow', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'drow', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'drow', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     elif (total_num_p4 > 21) and (total_num_dea > 21):
-                        cv2.putText(frame, 'drow', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'drow', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'drow', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
                     else:
-                        cv2.putText(frame, 'lose', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (77, 235, 56), 3)
+                        cv2.putText(frame, 'lose', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)
+                        cv2.putText(frame, 'lose', (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, font_color, front_th)
         
         #映像にそれぞれのプレイヤーの手札の合計値を表示する
         else:
 
-            cv2.putText(frame, str(total_num_p1), (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
-            cv2.putText(frame, str(total_num_p2), (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
-            cv2.putText(frame, str(total_num_p3), (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
-            cv2.putText(frame, str(total_num_p4), (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
+            cv2.putText(frame, str(total_num_p1), (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)#輪郭用
+            cv2.putText(frame, str(total_num_p1), (int(width*0.125), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, (0, 0, 255), 5)
+            cv2.putText(frame, str(total_num_p2), (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)#輪郭用
+            cv2.putText(frame, str(total_num_p2), (int(width*0.375), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, (0, 0, 255), 5)
+            cv2.putText(frame, str(total_num_p3), (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)#輪郭用
+            cv2.putText(frame, str(total_num_p3), (int(width*0.625), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, (0, 0, 255), 5)
+            cv2.putText(frame, str(total_num_p4), (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)#輪郭用
+            cv2.putText(frame, str(total_num_p4), (int(width*0.875), int(height*0.75)), cv2.FONT_HERSHEY_SIMPLEX, font_size, (0, 0, 255), 5)
 
             #手札にAがあった場合
-            cv2.putText(frame, str(total_num_p1s), (int(width*0.125), int(height*0.8)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 255), 3)
-            cv2.putText(frame, str(total_num_p2s), (int(width*0.375), int(height*0.8)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 255), 3)
-            cv2.putText(frame, str(total_num_p3s), (int(width*0.625), int(height*0.8)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 255), 3)
-            cv2.putText(frame, str(total_num_p4s), (int(width*0.875), int(height*0.8)), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 255), 3)
+            cv2.putText(frame, str(total_num_p1s), (int(width*0.125), int(height*0.85)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)#輪郭用
+            cv2.putText(frame, str(total_num_p1s), (int(width*0.125), int(height*0.85)), cv2.FONT_HERSHEY_SIMPLEX, font_size, (255, 0, 255), 5)
+            cv2.putText(frame, str(total_num_p2s), (int(width*0.375), int(height*0.85)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)#輪郭用
+            cv2.putText(frame, str(total_num_p2s), (int(width*0.375), int(height*0.85)), cv2.FONT_HERSHEY_SIMPLEX, font_size, (255, 0, 255), 5)
+            cv2.putText(frame, str(total_num_p3s), (int(width*0.625), int(height*0.85)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)#輪郭用
+            cv2.putText(frame, str(total_num_p3s), (int(width*0.625), int(height*0.85)), cv2.FONT_HERSHEY_SIMPLEX, font_size, (255, 0, 255), 5)
+            cv2.putText(frame, str(total_num_p4s), (int(width*0.875), int(height*0.85)), cv2.FONT_HERSHEY_SIMPLEX, font_size, back_color, back_th)#輪郭用
+            cv2.putText(frame, str(total_num_p4s), (int(width*0.875), int(height*0.85)), cv2.FONT_HERSHEY_SIMPLEX, font_size, (255, 0, 255), 5)
 
         #ゲームの状態のフラグを取得
         #チュートリアルありとなしの各フラグ処理
@@ -420,6 +518,9 @@ def gen(camera,tut_frag):
             field_state,turn_frag.value = get_state.get_state(field_list,True,field_state)
         print('デバッグ：field_state'+str(field_state))
 
+        #サレンダーのフラグ処理
+        surrender_def()
+
         #取得したフラグからチュートリアルのテキストを取得
         tutorial_text = tokui.sakaguti(field_state)
         
@@ -428,7 +529,7 @@ def gen(camera,tut_frag):
         #全プレイヤーの手札をもとに戦術の結果を取得する
         #カードが配布された後、アシストを表示する
         if field_state[0]>=2:
-            assist_text = assist.get_assist(field_list)
+            assist_text = assist.get_assist(field_list,surrender_list)
         else:
             assist_text = ''
 

@@ -2,7 +2,7 @@ from myapp import logic as lg
 import numpy as np
 import urllib.parse
 
-def get_assist(hand_arr):
+def get_assist(hand_arr,surrender_list):
 
     assist_text = []
 
@@ -15,17 +15,21 @@ def get_assist(hand_arr):
 
         assist_flag = lg.assist(player_hand,d_list)
 
-        if assist_flag == 0:
-            assist_text.append(urllib.parse.quote("プレイヤー"+str(i)+"：\tスタンド"))
-        
-        elif assist_flag == 1:
-            assist_text.append(urllib.parse.quote("プレイヤー"+str(i)+"：\tヒット"))
+        if surrender_list[i-1] == 1:
+            assist_text.append(urllib.parse.quote("プレイヤー"+str(i)+"：\tサレンダー済み"))
 
-        elif assist_flag == 2:
-            assist_text.append(urllib.parse.quote("プレイヤー"+str(i)+"：\tサレンダー"))
-        
         else:
-            assist_text.append(urllib.parse.quote("プレイヤー"+str(i)+"：\tバースト"))
+            if assist_flag == 0:
+                assist_text.append(urllib.parse.quote("プレイヤー"+str(i)+"：\tスタンド"))
+            
+            elif assist_flag == 1:
+                assist_text.append(urllib.parse.quote("プレイヤー"+str(i)+"：\tヒット"))
+
+            elif assist_flag == 2:
+                assist_text.append(urllib.parse.quote("プレイヤー"+str(i)+"：\tサレンダー"))
+            
+            else:
+                assist_text.append(urllib.parse.quote("プレイヤー"+str(i)+"：\tバースト"))
 
         i = i + 1
 

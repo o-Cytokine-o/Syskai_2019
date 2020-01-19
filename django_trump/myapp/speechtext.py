@@ -24,7 +24,11 @@ def SpeechToText():
             print(r.recognize_google(audio, language='ja-JP'))
             
             if r.recognize_google(audio, language='ja-JP') in "ターンエンド":
-                return True
+                return 1
+                break
+
+            elif r.recognize_google(audio, language='ja-JP') in "サレンダー":
+                return 2
                 break
 
         except sr.UnknownValueError:
