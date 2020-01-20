@@ -520,7 +520,6 @@ def gen(camera,tut_frag):
 
         #サレンダーのフラグ処理
         surrender_def()
-
         #取得したフラグからチュートリアルのテキストを取得
         tutorial_text = tokui.sakaguti(field_state)
         
