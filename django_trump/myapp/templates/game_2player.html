@@ -1,0 +1,113 @@
+{% load static %}
+<html>
+  <head>
+      <meta charset="UTF-8">
+      <script src="js/encoding/encoding.js"></script>
+      {% load static %}
+      <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" crossorigin="anonymous">
+
+  </head>
+  <body>
+    {% block extrahead %}
+      <link href="{% static 'game.css' %}" rel="stylesheet">
+    {% endblock %}
+    <div class="main-div container ">
+      <div class="row r1">
+        <!--- 画像認識表示 -->
+        <div class='col-8 game-screen'>
+            <img src="{% url 'myapp:view_OD_2player' %}" class="game">
+        </div>
+  
+        <!--- アシスト表示 --->
+        <div class="col assist">
+          <h4 class="side">アシスト</h4>
+          <p class="assistTop">
+            ここでは「ベーシックストラテジ」という戦術に沿った結果が表示されます。<br>
+            ヒットするべきかスタンドにするべきかわからない場合は<br>
+            アシストに従うと勝てるかもしれません...
+          </p>
+          <p class="assist1"></p>
+          <p class="assist2"></p>
+        </div>
+      </div>
+      
+      <div class="row r2">
+        <!--- チュートリアル表示 --->
+        <div class="col c1">
+          <div class="info1"><p>チュートリアル</p><a href="{% url 'myapp:game_2player'%}" class="button">リセット</a></div>
+        <!--</div>
+        <div class="col c2">-->
+          <p class="tutorial1"></p>
+          <p class="tutorial2"></p>
+          <p class="tutorial3"></p>
+          <p class="tutorial4"></p>
+          <br/>
+          <p class="tutorial5"></p>
+        </div>
+  
+        <div class="col menu">
+            <label for="menu_bar01">基本ルール</label>
+            <input type="checkbox" id="menu_bar01" class="accordion" />
+            <ul id="links01">
+              <li>ディーラーが自分とプレイヤーにカードを配り、手札の合計数が21点に近い方が勝ちです</li>
+              <li>カードの合計値が21点を超えた場合バーストになり、負けとなります。</li>
+            </ul>
+          <label for="menu_bar02">カードの点数について</label>
+          <input type="checkbox" id="menu_bar02" class="accordion" />
+          <ul id="links02">
+              <li>2~10:数字通りの点数</li>
+              <li>絵札:全て10点</li>
+              <li>A:1点or11点</li>
+          </ul>
+          <label for="menu_bar03">宣言について</label>
+          <input type="checkbox" id="menu_bar03" class="accordion" />
+          <ul id="links03">
+              <li>カードを引く場合はヒット</li>
+              <li>それ以上引かない場合はスタンド</li>
+              <li>勝負を降りる場合はサレンダー</li>
+            </ul>
+        </div>
+
+      </div>
+      
+    </div>
+  </body>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script>
+    $(function() {
+    
+        socket = new WebSocket("ws://localhost:9990/");
+        socket.onmessage = function(e) {
+            var tuto_assist_text = e.data
+            /*テキストをチュートリアルとアシストに分割*/
+            text_arr = tuto_assist_text.split(':')
+            tutorial_text = text_arr[0].split(',')
+            var i = 1
+
+            /*tutorialテキストエリアをクリア*/
+            $('.tutorial1').html('');
+            $('.tutorial2').html('');
+            $('.tutorial3').html('');
+            $('.tutorial4').html('');
+            $('.tutorial5').html('');
+
+            /*チュートリアル文をhtmlに置く*/
+            tutorial_text.forEach(function(value){
+              $('.tutorial'+i).html(decodeURIComponent(value));
+              console.log(decodeURIComponent(value));
+              i++;
+            });
+            
+            /*アシスト文をhtmlに置く*/
+            assist_text = text_arr[1].split(',')
+            var i = 1
+            assist_text.forEach(function(value){
+              $('.assist'+i).html(decodeURIComponent(value));
+              i++;
+            });
+    
+        }
+    });
+    
+  </script>
+</html>

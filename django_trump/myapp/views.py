@@ -1,4 +1,5 @@
 from myapp import trump_detection as trd
+from myapp import trump_detection_2p as trd_2p
 from django.shortcuts import render
 from django.http import HttpResponse,StreamingHttpResponse,HttpResponseServerError
 import cv2
@@ -28,6 +29,13 @@ def game2(request):
     }
     return render(request,'game2.html', params)
 
+def game_2player(request):
+    params = { # <- 渡したい変数を辞書型オブジェクトに格納
+        'title': 'Hi Django!',
+        'subtitle': 'This is my 1st Django app.',
+    }
+    return render(request,'game_2player.html', params)
+
 class VideoCamera(object):
     def __init__(self):
         self.video = cv2.VideoCapture(0)
@@ -48,5 +56,12 @@ def view_OD(request):
 def view_OD_no_tut(request): 
     try:
         return StreamingHttpResponse(trd.gen(VideoCamera(),False),content_type="multipart/x-mixed-replace;boundary=frame")
+    except HttpResponseServerError as e:
+        print("aborted")
+
+@gzip.gzip_page
+def view_OD_2player(request): 
+    try:
+        return StreamingHttpResponse(trd_2p.gen(VideoCamera(),True),content_type="multipart/x-mixed-replace;boundary=frame")
     except HttpResponseServerError as e:
         print("aborted")
